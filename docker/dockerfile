@@ -1,0 +1,101 @@
+# SEESR with SD Turbo Dockerfile
+# Ottimizzato per super-resolution con environment completo e modelli pre-scaricati
+
+FROM nvidia/cuda:11.8-devel-ubuntu20.04
+
+# Prevent interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies (allineato con cog.yaml)
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y \
+    python3.10 \
+    python3.10-pip \
+    python3.10-dev \
+    python3.10-venv \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    ffmpeg \
+    git \
+    wget \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create symlinks for python (aggiornato a Python 3.10)
+RUN ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
+    ln -sf /usr/bin/python3.10 /usr/bin/python && \
+    ln -sf /usr/bin/pip3 /usr/bin/pip
+
+# Upgrade pip and install build tools
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# Set working directory
+WORKDIR /src
+
+# Copy requirements first for better caching
+COPY requirements.txt setup.py ./
+
+# Install Python dependencies (completo dal requirements.txt)
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Install project in editable mode
+RUN pip3 install --no-cache-dir -e .
+
+# Copy source code
+COPY . .
+
+# Create necessary directories per models e cache
+RUN mkdir -p /root/.cache/torch/hub/checkpoints && \
+    mkdir -p /root/.cache/huggingface/transformers && \
+    mkdir -p /root/.cache/huggingface/diffusers && \
+    mkdir -p preset/models/seesr && \
+    mkdir -p preset/models/sd-turbo && \
+    mkdir -p preset/models/ram && \
+    mkdir -p /tmp/huggingface_cache && \
+    mkdir -p output && \
+    mkdir -p scripts
+
+# Set Python path and environment variables
+ENV PYTHONPATH="/src:${PYTHONPATH}"
+ENV HF_HOME="/root/.cache/huggingface"
+ENV TORCH_HOME="/root/.cache/torch"
+ENV HF_HUB_CACHE="/tmp/huggingface_cache"
+
+# Ottimizzazioni per produzione
+ENV TORCH_CUDA_ARCH_LIST="6.0;6.1;7.0;7.5;8.0;8.6"
+ENV FORCE_CUDA="1"
+ENV CUDA_LAUNCH_BLOCKING="0"
+ENV TORCH_CUDNN_V8_API_ENABLED="1"
+
+# Ottimizzazioni memory e performance
+ENV PYTORCH_CUDA_ALLOC_CONF="max_split_size_mb:512"
+ENV OMP_NUM_THREADS="4"
+
+# Set proper permissions for scripts
+RUN chmod +x deployment/download_models.py tests/test_docker_env.py
+
+# Pre-download dei modelli necessari durante il build
+RUN python3 deployment/download_models.py
+
+# Test completo dell'ambiente
+RUN python3 tests/test_docker_env.py
+
+# Health check migliorato
+HEALTHCHECK --interval=30s --timeout=30s --start-period=120s --retries=3 \
+    CMD python3 -c "import torch, diffusers; print(f'Health OK: CUDA={torch.cuda.is_available()}, PyTorch={torch.__version__}')" || exit 1
+
+# Expose port for potential web interface
+EXPOSE 5000
+
+# Working directory and final setup
+WORKDIR /src
+
+# Default command - will be overridden by Cog
+CMD ["python3", "cog/predict.py"]

@@ -54,5 +54,5 @@ build:
     - "PyWavelets>=1.4.1"
     - "matplotlib>=3.7.2"
 
-# Entry point del predictor
-predict: "predict.py:Predictor"
+# Configurazione del predictor principale  
+predict: "cog/predict.py:Predictor"

@@ -50,27 +50,27 @@ class Predictor(BasePredictor):
             # Download SEESR model
             snapshot_download(
                 repo_id="alexnasa/SEESR",
-                local_dir="preset/models/seesr",
+                local_dir="deployment/preset/models/seesr",
                 cache_dir="/tmp/huggingface_cache"  # Use tmp for Replicate
             )
             
             # Download SD Turbo
             snapshot_download(
                 repo_id="stabilityai/sd-turbo",
-                local_dir="preset/models/sd-turbo",
+                local_dir="deployment/preset/models/sd-turbo",
                 cache_dir="/tmp/huggingface_cache"
             )
             
             # Download RAM model for tagging
             snapshot_download(
                 repo_id="xinyu1205/recognize_anything_model",
-                local_dir="preset/models/ram",
+                local_dir="deployment/preset/models/ram",
                 cache_dir="/tmp/huggingface_cache"
             )
             
             # Set model paths
-            self.pretrained_model_path = 'preset/models/sd-turbo'
-            self.seesr_model_path = 'preset/models/seesr'
+            self.pretrained_model_path = 'deployment/preset/models/sd-turbo'
+            self.seesr_model_path = 'deployment/preset/models/seesr'
             
             # Load core components
             self.scheduler = DDIMScheduler.from_pretrained(
@@ -167,8 +167,8 @@ class Predictor(BasePredictor):
                 
                 # Load RAM model for automatic tagging
                 self.tag_model = ram(
-                    pretrained='preset/models/ram/ram_swin_large_14m.pth',
-                    pretrained_condition='preset/models/ram/DAPE.pth',
+                    pretrained='deployment/preset/models/ram/ram_swin_large_14m.pth',
+                    pretrained_condition='deployment/preset/models/ram/DAPE.pth',
                     image_size=384,
                     vit='swin_l'
                 )

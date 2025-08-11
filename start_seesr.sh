@@ -232,7 +232,7 @@ test_system() {
         activate_venv
     fi
     
-    if "$PYTHON_EXECUTABLE" test_seesr.py; then
+    if "$PYTHON_EXECUTABLE" tests/test_seesr.py; then
         print_success "Test sistema completato con successo!"
         return 0
     else
