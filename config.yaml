@@ -1,0 +1,219 @@
+# Configurazione SEESR con SD Turbo
+# Questo file contiene le impostazioni ottimali per diverse configurazioni hardware
+
+# =============================================================================
+# CONFIGURAZIONE BASE
+# =============================================================================
+
+# Modelli da utilizzare
+models:
+  seesr_path: "preset/models/seesr"
+  sd_turbo_path: "preset/models/sd-turbo" 
+  ram_path: "preset/models/ram"
+  
+# =============================================================================
+# CONFIGURAZIONE SD TURBO
+# =============================================================================
+
+sd_turbo:
+  # Numero ottimale di step per SD Turbo (1-4)
+  inference_steps: 4
+  
+  # CFG Scale ottimale per SD Turbo
+  cfg_scale: 1.0
+  
+  # Scheduler ottimizzato
+  scheduler: "DDIM"
+  
+  # Abilitazioni
+  enable_xformers: true
+  enable_tiled_vae: true
+
+# =============================================================================
+# CONFIGURAZIONE MEMORIA
+# =============================================================================
+
+memory:
+  # Dimensioni tile per gestione memoria
+  vae_encoder_tile_size: 1024    # GPU >= 12GB
+  vae_decoder_tile_size: 224     # GPU >= 12GB
+  latent_tiled_size: 320         # Dimensione tile diffusion
+  latent_tiled_overlap: 4        # Overlap tile
+  
+  # Configurazioni per GPU con meno memoria
+  low_vram:
+    vae_encoder_tile_size: 512   # GPU 8-12GB
+    vae_decoder_tile_size: 128   # GPU 8-12GB
+    latent_tiled_size: 256       # GPU 8-12GB
+    latent_tiled_overlap: 2      # GPU 8-12GB
+  
+  very_low_vram:
+    vae_encoder_tile_size: 256   # GPU 6-8GB
+    vae_decoder_tile_size: 64    # GPU 6-8GB
+    latent_tiled_size: 192       # GPU 6-8GB
+    latent_tiled_overlap: 2      # GPU 6-8GB
+
+# =============================================================================
+# CONFIGURAZIONE SEESR
+# =============================================================================
+
+seesr:
+  # Kernel Density Steering
+  use_kds: true
+  kds_bandwidth: 0.1
+  kds_particles: 10
+  
+  # RAM (Recognize Anything Model)
+  use_ram_guidance: true
+  ram_threshold: 0.68
+  ram_max_tags: 20
+  
+  # Correzione colore
+  color_correction:
+    method: "wavelet"  # wavelet, adain, luminance
+    alpha: 0.7
+    wavelet_type: "db4"
+    wavelet_levels: 3
+
+# =============================================================================
+# PROMPT PREDEFINITI
+# =============================================================================
+
+prompts:
+  positive_base: "high quality, detailed, 8k, best quality, masterpiece"
+  negative_base: "dotted, noise, blur, lowres, oversmooth, longbody, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality"
+  
+  # Prompt specifici per tipo di immagine
+  portrait:
+    positive: "portrait, beautiful face, detailed eyes, natural skin texture, professional photography"
+    negative: "blurry face, distorted features, artificial skin, makeup artifacts"
+  
+  landscape:
+    positive: "landscape, natural scenery, detailed textures, vivid colors, sharp focus"
+    negative: "artificial colors, oversaturated, blurry details"
+  
+  anime:
+    positive: "anime style, detailed illustration, vibrant colors, sharp lines"
+    negative: "realistic, photographic, blurry lines, dull colors"
+
+# =============================================================================
+# CONFIGURAZIONE PERFORMANCE
+# =============================================================================
+
+performance:
+  # Profili di qualità
+  profiles:
+    fast:
+      inference_steps: 1
+      cfg_scale: 1.0
+      use_kds: false
+      color_correction_alpha: 0.5
+    
+    balanced:
+      inference_steps: 4
+      cfg_scale: 1.0
+      use_kds: true
+      color_correction_alpha: 0.7
+    
+    quality:
+      inference_steps: 4
+      cfg_scale: 1.0
+      use_kds: true
+      color_correction_alpha: 0.8
+      kds_particles: 16
+
+# =============================================================================
+# CONFIGURAZIONE AVANZATA
+# =============================================================================
+
+advanced:
+  # Ottimizzazioni PyTorch
+  torch_compile: false  # Experimental, può migliorare le performance
+  torch_backends: "inductor"
+  
+  # Precision
+  mixed_precision: true
+  torch_dtype: "float16"  # float16, bfloat16, float32
+  
+  # Memory management
+  enable_memory_efficient_attention: true
+  enable_flash_attention: false  # Richiede flash-attn
+  
+  # CPU fallback
+  enable_cpu_offload: false  # Offload modelli su CPU quando non in uso
+  
+  # Debug
+  debug_mode: false
+  verbose_logging: false
+
+# =============================================================================
+# CONFIGURAZIONE OUTPUT
+# =============================================================================
+
+output:
+  # Formato di output
+  format: "PNG"  # PNG, JPEG, WEBP
+  quality: 95    # Per JPEG/WEBP
+  
+  # Post-processing
+  enable_sharpening: false
+  sharpening_strength: 0.1
+  
+  # Metadata
+  save_metadata: true
+  include_params: true
+
+# =============================================================================
+# PROFILI HARDWARE PREDEFINITI
+# =============================================================================
+
+hardware_profiles:
+  # RTX 4090/3090 - 24GB VRAM
+  high_end:
+    memory: 
+      vae_encoder_tile_size: 1536
+      vae_decoder_tile_size: 384
+      latent_tiled_size: 480
+    performance:
+      profile: "quality"
+    advanced:
+      torch_compile: true
+      mixed_precision: true
+  
+  # RTX 4080/3080 - 12-16GB VRAM  
+  mid_range:
+    memory:
+      vae_encoder_tile_size: 1024
+      vae_decoder_tile_size: 224
+      latent_tiled_size: 320
+    performance:
+      profile: "balanced"
+    advanced:
+      mixed_precision: true
+  
+  # RTX 4070/3070 - 8-12GB VRAM
+  budget:
+    memory:
+      vae_encoder_tile_size: 512
+      vae_decoder_tile_size: 128
+      latent_tiled_size: 256
+    performance:
+      profile: "fast"
+    advanced:
+      mixed_precision: true
+      enable_cpu_offload: true
+
+# =============================================================================
+# ESEMPI DI UTILIZZO
+# =============================================================================
+
+# Per utilizzare questa configurazione:
+# 1. Copia questo file come config.yaml
+# 2. Modifica i parametri secondo le tue esigenze
+# 3. Carica la configurazione nel tuo script:
+#
+# from omegaconf import OmegaConf
+# config = OmegaConf.load("config.yaml")
+#
+# 4. Applica i parametri al predictor:
+# predictor.apply_config(config)

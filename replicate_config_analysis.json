@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-08-11T14:59:34.523475",
+  "gpu_info": {
+    "type": "CPU",
+    "memory": 0,
+    "memory_gb": 0
+  },
+  "benchmarks": {
+    "inference_steps": {
+      "1": 0.8,
+      "2": 1.4,
+      "4": 2.8,
+      "8": 5.6,
+      "20": 14.0,
+      "50": 35.0
+    },
+    "memory_configs": [
+      {
+        "name": "T4",
+        "memory_gb": 16,
+        "tile_encoder": 512,
+        "tile_decoder": 128
+      },
+      {
+        "name": "V100",
+        "memory_gb": 16,
+        "tile_encoder": 640,
+        "tile_decoder": 160
+      },
+      {
+        "name": "A40",
+        "memory_gb": 48,
+        "tile_encoder": 1024,
+        "tile_decoder": 224
+      },
+      {
+        "name": "A100",
+        "memory_gb": 80,
+        "tile_encoder": 1536,
+        "tile_decoder": 320
+      }
+    ]
+  },
+  "recommendations": {
+    "production": "nvidia-a40-large",
+    "development": "nvidia-t4",
+    "testing": "nvidia-v100"
+  }
+}
