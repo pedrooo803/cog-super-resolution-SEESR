@@ -1,18 +1,13 @@
-# SEESR with SD Turbo Dockerfile
-# Ottimizzato per super-resolution con environment completo e modelli pre-scaricati
-
-FROM nvidia/cuda:11.8-devel-ubuntu20.04
+FROM ubuntu:20.04
 
 # Prevent interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies (allineato con cog.yaml)
-RUN apt-get update && apt-get install -y \
-    software-properties-common \
+RUN apt-get update && apt-get install -y software-properties-common \
     && add-apt-repository ppa:deadsnakes/ppa \
-    && apt-get update && apt-get install -y \
+    && apt-get update \
+    && apt-get install -y \
     python3.10 \
-    python3.10-pip \
     python3.10-dev \
     python3.10-venv \
     libgl1-mesa-glx \
@@ -28,13 +23,16 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
+# Installa pip per Python 3.10
+RUN python3.10 -m ensurepip --upgrade && python3.10 -m pip install --upgrade pip setuptools wheel
+
 # Create symlinks for python (aggiornato a Python 3.10)
 RUN ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
     ln -sf /usr/bin/python3.10 /usr/bin/python && \
-    ln -sf /usr/bin/pip3 /usr/bin/pip
+    ln -sf /usr/local/bin/pip3.10 /usr/bin/pip3 && \
+    ln -sf /usr/local/bin/pip3.10 /usr/bin/pip
 
-# Upgrade pip and install build tools
-RUN python3 -m pip install --upgrade pip setuptools wheel
+# Upgrade pip e build tools (già fatto sopra per python3.10)
 
 # Set working directory
 WORKDIR /src
