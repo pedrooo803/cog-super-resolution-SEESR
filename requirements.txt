@@ -24,3 +24,4 @@ huggingface_hub>=0.16.4
 PyWavelets>=1.4.1
 matplotlib>=3.7.2
 cog>=0.16.0
+basicsr==1.4.2

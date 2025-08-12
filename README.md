@@ -1,216 +1,181 @@
-# SEESR with SD Turbo - Super-Resolution Ottimizzata
+# SEESR with SD Turbo – Optimized Super-Resolution
 
-Un'implementazione avanzata di SEESR (Semantic Edge Enhanced Super-Resolution) ottimizzata con SD Turbo per super-resolution ultra-veloce e di alta qualità.
+An advanced implementation of SEESR (Semantic Edge Enhanced Super-Resolution) optimized with SD Turbo for ultra-fast, high-quality super-resolution. Includes optional Real-ESRGAN pre-enhancement and robust color/frequency correction.
 
-## 🚀 Caratteristiche Principali
+## 🚀 Key Features
 
-✅ **Velocità Ultra-Rapida**: 1-4 inference steps vs 20-50 steps tradizionali  
-✅ **Qualità Mantenuta**: SD Turbo ottimizzato per pochi step mantenendo la qualità  
-✅ **Memory Efficient**: Tiled VAE per gestire immagini grandi con poca VRAM  
-✅ **Tagging Automatico**: RAM model genera automaticamente i prompt dalle immagini  
-✅ **Color Correction**: Wavelet-based color fix per risultati più naturali  
-✅ **KDS (Kernel Density Steering)**: Controllo avanzato della generazione  
-✅ **Docker Ready**: Container ottimizzato con modelli pre-scaricati  
-✅ **Cross-Platform**: Supporto completo per macOS, Linux e Windows  
-✅ **Virtual Environment**: Ambiente isolato per massima consistenza  
+- Ultra-fast inference: 1–4 steps vs 20–50 traditional
+- Quality retained with SD Turbo optimizations for few steps
+- Memory efficient: Tiled VAE for large images on limited VRAM
+- Automatic tagging: RAM model auto-generates guidance from images
+- Color correction: Wavelet-based color fix for natural results
+- KDS (Kernel Density Steering): Advanced generation control
+- Optional Real-ESRGAN “GAN-Embedding” pre-enhancement
+- Docker-ready: Pre-configured container with pre-fetched models
+- Cross-platform: macOS, Linux, and Windows
+- Virtual environment: Isolated, reproducible setup
 
-## 🐳 Deployment e Build
+## 🐳 Deployment & Build
 
-### Docker Build (Consigliato per Produzione)
-Il progetto include un **Dockerfile completamente aggiornato** con:
-- Environment completo Python 3.10
-- Modelli pre-scaricati durante il build
-- Test automatici dell'ambiente
-- Ottimizzazioni CUDA e memory management
+### Docker Build (Recommended for Production)
+The project includes a fully updated Dockerfile with:
+- Python 3.10 environment
+- Pre-downloaded model weights during build
+- Automatic environment tests
+- CUDA optimizations and memory management
 
 ```bash
-# Build rapido con Cog
-cog build -f cog/cog.yaml
+# Quick build with Cog
+cog build
 
-# Build manuale Docker
+# Manual Docker build
 ./docker/docker_build.sh build
 
-# Per istruzioni complete
+# Full instructions
 cat docker/DOCKER_BUILD_GUIDE.md
 ```
 
-### Local Development  
+### Local Development
 ```bash
-# Setup automatico ambiente virtuale
+# Automatic virtual environment setup
 ./start_seesr.sh setup
 
-# Test del sistema
+# Run tests
 ./start_seesr.sh test
 
-# Esegui super-resolution
+# Run super-resolution
 ./start_seesr.sh run input.jpg
 ```
 
-## 📁 Struttura del Progetto
+## 📁 Project Structure
 
-```
-├── 📋 Core Project Files
-│   ├── README.md                    # Documentazione principale
-│   ├── requirements.txt             # Dipendenze Python
-│   ├── setup.py                     # Setup installazione
-│   ├── config.yaml                  # Configurazione generale
-│   └── start_seesr.sh              # Script avvio rapido
-│
-├── 🧠 AI Models & Core Logic
-│   ├── models/                      # Modelli custom SEESR
-│   │   ├── unet_2d_condition.py    # UNet custom per SEESR  
-│   │   └── controlnet.py           # ControlNet custom
-│   ├── pipelines/                   # Pipeline di inferenza
-│   │   └── pipeline_seesr.py       # Pipeline SEESR + SD Turbo
-│   ├── ram/                         # RAM model per tagging
-│   │   ├── models/ram_lora.py       # RAM con LoRA
-│   │   └── inference_ram.py        # Inferenza RAM
-│   └── utils/                       # Utilità e helper
-│       ├── wavelet_color_fix.py     # Color correction
-│       └── xformers_utils.py       # Ottimizzazioni xformers
-│
-├── 🚀 Deployment & Models
-│   ├── deployment/                  # Modelli e deployment
-│   │   ├── preset/models/          # Modelli pre-scaricati
-│   │   ├── download_models.py      # Script download modelli
-│   │   └── replicate_config_*.md   # Config Replicate
-│   ├── docker/                      # Container Docker
-│   │   ├── dockerfile              # Dockerfile ottimizzato
-│   │   ├── docker_build.sh         # Script build Docker
-│   │   └── DOCKER_BUILD_GUIDE.md   # Guida Docker completa
-│   └── cog/                         # Configurazione Cog/Replicate
-│       ├── cog.yaml                # Config Cog principale
-│       └── predict.py              # Predictor per Replicate
-│
-├── 🧪 Tests & Validation
-│   ├── tests/                       # Test suite completa
-│   │   ├── test_seesr.py           # Test sistema SEESR
-│   │   ├── test_complete.py        # Test integrazione
-│   │   ├── test_environment.py     # Test ambiente
-│   │   ├── test_docker_env.py      # Test Docker
-│   │   └── test_replicate_configs.py # Test Replicate
-│   └── seesr_env/                  # Virtual environment
-│
-└── 📚 Documentation
-    ├── TECHNICAL_DOCS.md            # Documentazione tecnica
-    ├── USAGE_EXAMPLES.md            # Esempi d'uso
-    └── IMPLEMENTATION_COMPLETE.md   # Status implementazione
-```
-project/
-├── cog.yaml                    # Configurazione Cog
-├── predict.py                  # Predictor principale con SD Turbo
-├── requirements.txt            # Dipendenze Python
-├── setup.py                    # Setup del pacchetto
-├── models/
-│   ├── __init__.py
-│   ├── controlnet.py          # ControlNet personalizzato per SEESR
-│   └── unet_2d_condition.py   # UNet con modifiche SEESR
+```text
+.
+├── activate_seesr.sh              # Activate the local venv
+├── cog.yaml                       # Cog configuration (root)
+├── config.yaml                    # App config
+├── predict.py                     # Shim: re-exports Predictor from cog/predict.py
+├── README.md                      # This file
+├── requirements.txt               # Python dependencies
+├── setup.py                       # Package metadata (editable install)
+├── start_seesr.sh                 # Helper for setup/run/test
+├── TECHNICAL_DOCS.md              # Technical docs
+├── USAGE_EXAMPLES.md              # Extra usage examples
+├── test_input.jpg                 # Sample input image
+├── cog/
+│   ├── predict.py                 # Main Predictor (Cog entrypoint)
+│   └── README.md
+├── deployment/
+│   ├── download_models.py         # Optional weights prefetch
+│   ├── REPLICATE_FINAL_RECOMMENDATION.md
+│   ├── REPLICATE_HARDWARE_GUIDE.md
+│   └── preset/models/             # Model presets
+├── docker/
+│   ├── dockerfile                 # Dockerfile
+│   ├── docker_build.sh            # Build helper
+│   └── README.md
+├── models/                        # Custom UNet/ControlNet
+│   ├── controlnet.py
+│   └── unet_2d_condition.py
 ├── pipelines/
-│   ├── __init__.py
-│   └── pipeline_seesr.py      # Pipeline SEESR con SD Turbo
+│   └── pipeline_seesr.py          # SEESR + SD Turbo pipeline
 ├── ram/
-│   ├── __init__.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── ram_lora.py        # RAM model per tagging automatico
-│   └── inference_ram.py       # Funzioni di inferenza RAM
-├── utils/
-│   ├── __init__.py
-│   └── wavelet_color_fix.py   # Correzione colore wavelet
-└── preset/
-    └── models/                # Pesi modelli (scaricati automaticamente)
-        ├── seesr/
-        ├── sd-turbo/
-        └── ram/
+│   └── models/ram_lora.py         # RAM model (auto-tagging)
+├── tests/                         # Test suite
+│   ├── test_complete.py
+│   ├── test_docker_env.py
+│   ├── test_environment.py
+│   └── test_seesr.py
+└── utils/
+    ├── wavelet_color_fix.py       # Wavelet/AdaIN/luminance color fixes
+    └── xformers_utils.py          # Attention optimizations helpers
 ```
 
-## 🔧 Installazione e Setup
+## 🔧 Installation & Setup
 
-### 🚀 Setup Automatico con Ambiente Virtuale (Raccomandato)
+### 🚀 Automatic Setup with Virtual Environment (Recommended)
 
-Il modo più semplice e affidabile per utilizzare SEESR è tramite lo script di setup automatico che crea un ambiente virtuale isolato:
+The easiest way to use SEESR is via the helper script, which creates an isolated virtual environment and installs all dependencies:
 
 ```bash
-# Clona il repository
+# Clone the repository
 git clone https://github.com/alexgenovese/cog-super-resolution-SEESR.git
 cd cog-super-resolution-SEESR
 
-# Setup automatico con ambiente virtuale
+# Automatic venv + install
 ./start_seesr.sh setup
 ```
 
-Questo script automaticamente:
-- ✅ Verifica i requisiti di sistema (Python 3.9+)
-- ✅ Crea un ambiente virtuale dedicato (`seesr_env`)
-- ✅ Installa tutte le dipendenze necessarie
-- ✅ Configura l'ambiente per l'uso
+This script will:
+- Verify system requirements (Python 3.9+)
+- Create a dedicated venv (`seesr_env`)
+- Install all required dependencies
+- Configure the environment for usage
 
-### 🎯 Avvio Rapido
+### 🎯 Quick Start
 
 ```bash
-# Test del modello con immagine di esempio
+# Test the model with a sample image
 ./start_seesr.sh test
 
-# Avvio con interfaccia Python
+# Start a Python shell inside the env
 ./start_seesr.sh python
 
-# Benchmark delle prestazioni
+# Quick performance benchmark
 ./start_seesr.sh benchmark
 
-# Attivazione manuale dell'ambiente
+# Manually activate the environment
 source activate_seesr.sh
 
-# 🚀 COMANDI PRINCIPALI:
-• ./start_seesr.sh          - Avvia ambiente
-• python test_complete.py   - Test sistema
-• python predict.py         - Predictor principale
+# Main commands:
+# ./start_seesr.sh                - Setup/run helper
+# python tests/test_complete.py   - System test
+# python predict.py               - Predictor shim (imports cog/predict.py)
 
 ```
 
-### Requisiti di Sistema
-- Python 3.9+ (verificato automaticamente)
-- CUDA 11.8+ (per GPU, opzionale)
-- 8-16GB VRAM (raccomandato per GPU)
-- 4GB+ RAM (minimo per CPU)
+### System Requirements
+- Python 3.9+ (auto-checked)
+- CUDA 11.8+ (optional for GPU)
+- 8–16GB VRAM (recommended for GPU)
+- 4GB+ RAM (CPU minimum)
 
-### Installazione Manuale (Avanzata)
-
-Se preferisci installare manualmente senza ambiente virtuale:
+### Manual Installation (Advanced)
 
 ```bash
-# Installa le dipendenze
+# Install dependencies
 pip install -r requirements.txt
 
-# Installa il pacchetto in modalità sviluppo
+# Editable install
 pip install -e .
 ```
 
-### Installazione con Cog
+### Cog Installation
 
 ```bash
-# Installa Cog se non già installato
-sudo curl -o /usr/local/bin/cog -L https://github.com/replicate/cog/releases/latest/download/cog_`uname -s`_`uname -m`
+# Install Cog if not present
+sudo curl -o /usr/local/bin/cog -L "https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)"
 sudo chmod +x /usr/local/bin/cog
 
-# Build del container
+# Build container
 cog build
 
-# Test del modello
+# Test model
 cog predict -i image=@input.jpg
 ```
 
-## 🎯 Utilizzo
+## 🎯 Usage
 
-### Utilizzo Base
+### Basic Usage
 
 ```python
 from predict import Predictor
 
-# Inizializza il predictor
+# Initialize predictor
 predictor = Predictor()
 predictor.setup()
 
-# Esegui super-resolution
+# Run super-resolution
 result = predictor.predict(
     image="input.jpg",
     scale_factor=4,
@@ -222,108 +187,115 @@ result = predictor.predict(
 )
 ```
 
-### Parametri Avanzati
+### Advanced Parameters
 
 ```python
 result = predictor.predict(
     image="input.jpg",
-    user_prompt="beautiful landscape",           # Prompt utente opzionale
-    positive_prompt="masterpiece, best quality", # Prompt positivo
-    negative_prompt="blur, noise, artifacts",    # Prompt negativo
-    num_inference_steps=4,                       # 1-4 per SD Turbo
-    scale_factor=4,                              # Fattore di scala
-    cfg_scale=1.0,                               # CFG per SD Turbo
-    use_kds=True,                                # Kernel Density Steering
-    bandwidth=0.1,                               # Bandwidth KDS
-    num_particles=10,                            # Particelle KDS
-    seed=42,                                     # Seed per riproducibilità
-    latent_tiled_size=320,                       # Dimensione tile diffusion
-    latent_tiled_overlap=4                       # Overlap tile
+    user_prompt="beautiful landscape",            # Optional user prompt
+    positive_prompt="masterpiece, best quality",  # Positive prompt
+    negative_prompt="blur, noise, artifacts",     # Negative prompt
+    num_inference_steps=4,                        # 1–4 for SD Turbo
+    scale_factor=4,                               # Upscale factor
+    cfg_scale=1.0,                                # SD Turbo CFG
+    use_kds=True,                                 # Kernel Density Steering
+    bandwidth=0.1,                                # KDS bandwidth
+    num_particles=10,                             # KDS particles
+    seed=42,                                      # Reproducibility seed
+    latent_tiled_size=320,                        # Diffusion tile size
+    latent_tiled_overlap=4                        # Tile overlap
 )
 ```
 
-## ⚡ Ottimizzazioni SD Turbo
+## ⚡ SD Turbo Optimizations
 
-### Configurazione Ottimale
-- **Inference Steps**: 1-4 (vs 20-50 tradizionali)
-- **CFG Scale**: 1.0 (SD Turbo è ottimizzato per CFG basso)
-- **Scheduler**: DDIM con timestep scheduling ottimizzato
-- **Memory**: Tiled VAE per immagini grandi
+### Optimal Settings
+- Inference Steps: 1–4 (vs 20–50 traditional)
+- CFG Scale: 1.0 (SD Turbo is tuned for low CFG)
+- Scheduler: DDIM with tuned timesteps
+- Memory: Tiled VAE for large images
 
-### Performance Attese
-- **Tempo di inferenza**: 5-15 secondi (vs 30-60 sec tradizionale)
-- **VRAM richiesta**: 8-10GB (con tiling)
-- **Qualità**: Superiore grazie al semantic guidance
-- **Risoluzione max**: Limitata solo dalla VRAM disponibile
+### Expected Performance
+- Inference time: ~5–15s (vs 30–60s traditional)
+- VRAM: ~8–10GB (with tiling)
+- Quality: High thanks to semantic guidance
+- Max resolution: Limited by available VRAM
 
-## 🎨 Caratteristiche Avanzate
+## 🎨 Advanced Features
 
 ### RAM (Recognize Anything Model)
-- **Tagging Automatico**: Genera automaticamente descrizioni dalle immagini
-- **Semantic Guidance**: Migliora la qualità usando informazioni semantiche
-- **LoRA Integration**: Adattamenti efficienti del modello
+- Automatic tagging: Generates image tags
+- Semantic guidance: Improves quality using tag embeddings
+- LoRA integration: Efficient adaptations
 
 ### Kernel Density Steering (KDS)
-- **Controllo Generazione**: Guida il processo di diffusion
-- **Stabilità**: Riduce artifacts e migliora la consistenza
-- **Configurabile**: Bandwidth e numero di particelle regolabili
+- Generation control: Guides diffusion
+- Stability: Reduces artifacts and improves consistency
+- Configurable: Bandwidth and particles
 
 ### Wavelet Color Correction
-- **Preservazione Colori**: Mantiene i colori dell'immagine originale
-- **Multi-method**: Supporta wavelet, AdaIN, e luminance correction
-- **Automatico**: Applicato automaticamente al risultato finale
+- Preserves original colors
+- Multi-method: Wavelet, AdaIN, and luminance correction
+- Automatic: Applied to the output image
 
-## 🛠️ Configurazione Avanzata
+### Real-ESRGAN “GAN-Embedding” (Optional)
+- Training-free enhancement before diffusion
+- Improves detail and stability for low-quality inputs
+- Can be disabled automatically when not available
 
-### Personalizzazione Modelli
+## 🛠️ Advanced Configuration
+
+### Custom Model Paths
 
 ```python
-# Configura percorsi modelli personalizzati
+# Configure custom model paths
 import os
 os.environ['SEESR_MODEL_PATH'] = '/path/to/custom/seesr'
 os.environ['SD_TURBO_PATH'] = '/path/to/custom/sd-turbo'
 os.environ['RAM_MODEL_PATH'] = '/path/to/custom/ram'
+# Set this to skip heavy downloads during CI/tests (not for production inference)
+os.environ['SEESR_TEST_MODE'] = '1'
 ```
 
 ### Memory Management
 
 ```python
-# Per VRAM limitata
+# For limited VRAM
 predictor.validation_pipeline._init_tiled_vae(
-    encoder_tile_size=512,    # Riduci per meno VRAM
-    decoder_tile_size=128     # Riduci per meno VRAM
+    encoder_tile_size=512,    # Lower for less VRAM
+    decoder_tile_size=128     # Lower for less VRAM
 )
 
-# Abilita gradient checkpointing
+# Enable gradient checkpointing
 predictor.unet.enable_gradient_checkpointing()
 ```
 
 ## 📊 Benchmarks
 
-| Metodo | Tempo (s) | VRAM (GB) | PSNR | SSIM |
-|--------|-----------|-----------|------|------|
-| SEESR Originale | 45-60 | 12-16 | 28.5 | 0.85 |
-| SEESR + SD Turbo | 8-15 | 8-10 | 29.2 | 0.87 |
-| Fallback SD Turbo | 3-5 | 6-8 | 26.8 | 0.82 |
+| Method | Time (s) | VRAM (GB) | PSNR | SSIM |
+|--------|----------|-----------|------|------|
+| SEESR (original) | 45–60 | 12–16 | 28.5 | 0.85 |
+| SEESR + SD Turbo | 8–15  | 8–10  | 29.2 | 0.87 |
+| SD Turbo fallback | 3–5   | 6–8   | 26.8 | 0.82 |
 
-## 🐛 Risoluzione Problemi
+## 🐛 Troubleshooting
 
-### Errori Comuni
+### Common Errors
 
-1. **CUDA Out of Memory**
+1) CUDA Out of Memory
    ```python
    # Riduci dimensioni tile
    latent_tiled_size=256
    latent_tiled_overlap=2
    ```
 
-2. **Modelli non trovati**
+2) Models not found
    ```bash
    # Forza il download
    python -c "from predict import Predictor; p = Predictor(); p.setup()"
    ```
 
-3. **Qualità bassa**
+3) Low quality output
    ```python
    # Aumenta steps se necessario
    num_inference_steps=4  # Massimo per SD Turbo
@@ -334,131 +306,128 @@ predictor.unet.enable_gradient_checkpointing()
 
 ### Predictor.predict()
 
+Signature (cog/predict.py):
+
 ```python
 def predict(
-    image: Path,                    # Immagine input
-    user_prompt: str = "",          # Prompt utente
-    positive_prompt: str = "...",   # Prompt positivo
-    negative_prompt: str = "...",   # Prompt negativo
-    num_inference_steps: int = 4,   # Steps inferenza (1-10)
-    scale_factor: int = 4,          # Fattore scala (1-8)
-    cfg_scale: float = 1.0,         # CFG scale (1.0-10.0)
-    use_kds: bool = True,           # Abilita KDS
-    bandwidth: float = 0.1,         # Bandwidth KDS (0.1-0.8)
-    num_particles: int = 10,        # Particelle KDS (1-16)
-    seed: int = 231,                # Seed random
-    latent_tiled_size: int = 320,   # Dimensione tile (128-480)
-    latent_tiled_overlap: int = 4   # Overlap tile (4-16)
+    image: Path,
+    user_prompt: str = "",
+    positive_prompt: str = "clean, high-resolution, 8k, masterpiece",
+    negative_prompt: str = "dotted, noise, blur, lowres, oversmooth, bad anatomy, bad hands, cropped",
+    num_inference_steps: int = 4,   # 1–8
+    scale_factor: int = 4,          # 1–6
+    cfg_scale: float = 1.0,         # 0.5–1.5
+    use_kds: bool = True,
+    bandwidth: float = 0.1,         # 0.1–0.8
+    num_particles: int = 10,        # 1–16
+    seed: int = 231,
+    latent_tiled_size: int = 320,   # 128–480
+    latent_tiled_overlap: int = 4,  # 4–16
 ) -> Path
 ```
 
-## ⚠️ Limitazioni e Considerazioni
+## ⚠️ Limitations & Considerations
 
-### Limitazioni Tecniche
+### Technical Limits
 
-**Requisiti Hardware:**
-- **GPU**: NVIDIA con almeno 8GB VRAM (raccomandato) o CPU (molto più lento)
-- **RAM**: Minimo 8GB, raccomandato 16GB+ per immagini grandi
-- **Spazio Disco**: 15-20GB per modelli e cache
+Hardware:
+- GPU: NVIDIA with 8GB+ VRAM recommended (CPU works but slower)
+- RAM: 8GB minimum, 16GB+ recommended for large images
+- Disk: 15–20GB for models and cache
 
-**Limitazioni Modello:**
-- **Risoluzione Input**: Immagini troppo piccole (<256px) potrebbero dare risultati subottimali
-- **Fattore Scala**: Scale factor >4x potrebbero introdurre artifacts
-- **Tipi Immagine**: Ottimizzato per foto naturali, risultati variabili su arte/disegni
+Model:
+- Very small inputs (<256px) may yield suboptimal results
+- Scale factors >4× may introduce artifacts
+- Tuned for natural photos; results vary for drawings/art
 
-### Considerazioni Prestazioni
+Performance Considerations
+- Virtual environments are recommended for consistent PyTorch/CUDA
+- GPU (CUDA): ~5–15s per inference
+- CPU: ~2–10 minutes per inference
+- Apple M1/M2: Intermediate with MPS
 
-**Ambiente Virtuale (Raccomandato):**
-- ✅ Isolamento completo delle dipendenze
-- ✅ Consistenza tra sistemi diversi
-- ✅ Facile gestione versioni PyTorch/CUDA
-- ⚠️ Richiede ~10GB spazio aggiuntivo
+Memory Management
+- Tiled VAE for >2K images with <16GB VRAM
+- Gradient checkpointing reduces VRAM at speed cost
+- Mixed precision (fp16) enabled by default
 
-**CPU vs GPU:**
-- **GPU (CUDA)**: 5-15 secondi per inferenza 
-- **CPU**: 2-10 minuti per inferenza (dipende da CPU)
-- **M1/M2 Mac**: Performance intermedie con MPS
+Common Troubles
 
-**Memory Management:**
-- **Tiled VAE**: Necessario per immagini >2K con <16GB VRAM
-- **Gradient Checkpointing**: Riduce VRAM a costo di velocità
-- **Mixed Precision**: fp16 per ridurre memoria (default abilitato)
-
-### Troubleshooting Comune
-
-**CUDA Out of Memory:**
+CUDA Out of Memory:
 ```bash
-# Riduci dimensioni tile VAE
+# Reduce VAE tile size
 latent_tiled_size = 256  # default: 320
 
-# Riduci batch size interno
-# Modifica predict.py se necessario
+# Reduce internal batch if customized
 ```
 
-**Import Errors:**
+Import Errors:
 ```bash
-# Reinstalla ambiente virtuale
+# Recreate virtual environment
 rm -rf seesr_env
 ./start_seesr.sh setup
 ```
 
-**Prestazioni Lente:**
+Slow Performance:
 ```bash
-# Verifica GPU detection
+# Check GPU detection
 ./start_seesr.sh test
 
-# Forza utilizzo CPU se necessario
+# Force CPU usage if necessary
 export CUDA_VISIBLE_DEVICES=""
 ```
 
-**Modelli Non Trovati:**
+Models Not Found:
 ```bash
-# I modelli vengono scaricati automaticamente
-# Verifica connessione internet al primo avvio
+# Models are downloaded automatically
+# Ensure internet connectivity on first run
 ```
 
 ### Best Practices
 
-**Per Prestazioni Ottimali:**
-- Usa GPU NVIDIA con CUDA 11.8+
-- Mantieni inference steps = 2-4 per SD Turbo
-- Usa CFG scale = 1.0 (ottimale per SD Turbo)
-- Abilita tiled VAE per immagini grandi
+For performance:
+- Use NVIDIA GPU with CUDA 11.8+
+- Keep inference steps 2–4 for SD Turbo
+- Use CFG scale = 1.0
+- Enable tiled VAE for large images
 
-**Per Qualità Massima:**
-- Fornisci prompt descrittivi precisi
-- Usa scale factor moderati (2x-4x)
-- Abilita KDS per maggiore stabilità
-- Testa diversi seed per risultati ottimali
+For quality:
+- Provide precise prompts
+- Prefer moderate scale factors (2×–4×)
+- Enable KDS for stability
+- Try different seeds
 
-**Per Sviluppo:**
-- Usa sempre l'ambiente virtuale
-- Testa su immagini piccole prima di batch processing
-- Monitora utilizzo memoria durante development
-- Mantieni backup di requirements.txt funzionanti
+For development:
+- Always use a virtual environment
+- Iterate on small images first
+- Monitor memory usage
+- Keep a known-good requirements.txt
 
 ## 📄 License
 
-MIT License - vedi [LICENSE](LICENSE) per i dettagli.
+MIT License – see [LICENSE](LICENSE).
 
-## 🤝 Contributi
+## 🤝 Contributing
 
-I contributi sono benvenuti! Per favore:
+Contributions are welcome:
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
 
-1. Fai fork del repository
-2. Crea un branch per la tua feature
-3. Fai commit delle modifiche
-4. Pushare al branch
-5. Apri una Pull Request
+## 📞 Support
 
-## 📞 Supporto
+- Issues: [GitHub Issues](https://github.com/alexgenovese/cog-super-resolution-SEESR/issues)
+- Discussions: [GitHub Discussions](https://github.com/alexgenovese/cog-super-resolution-SEESR/discussions)
 
-- **Issues**: [GitHub Issues](https://github.com/alexgenovese/cog-super-resolution-SEESR/issues)
-- **Discussioni**: [GitHub Discussions](https://github.com/alexgenovese/cog-super-resolution-SEESR/discussions)
+## 🙏 Credits
 
-## 🙏 Crediti
+- SEESR: Based on the Semantic Edge Enhanced Super-Resolution work
+- SD Turbo: Stability AI
+- RAM: Recognition Anything Model team
+- Diffusers: Hugging Face
 
-- **SEESR**: Basato sul paper originale di Semantic Edge Enhanced Super-Resolution
-- **SD Turbo**: Stability AI per SD Turbo
-- **RAM**: Recognition Anything Model team
-- **Diffusers**: Hugging Face team
+---
+
+Note: For CI/tests, you can set SEESR_LITE=1 or SEESR_TEST_MODE=1 to skip heavy downloads. Do not use lite mode for real inference.
